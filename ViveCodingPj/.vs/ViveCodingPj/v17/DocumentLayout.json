@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\owner\\Documents\\GitHub\\ViveCoding\\ViveCodingPj\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{86E2DBDC-3C9D-4C1D-B5E8-E83093D16D3B}|ViveCodingPj\\ViveCodingPj.vcxproj|C:\\Users\\owner\\Documents\\GitHub\\ViveCoding\\ViveCodingPj\\ViveCodingPj\\FstCoding.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{86E2DBDC-3C9D-4C1D-B5E8-E83093D16D3B}|ViveCodingPj\\ViveCodingPj.vcxproj|solutionrelative:ViveCodingPj\\FstCoding.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "FstCoding.cpp",
+              "DocumentMoniker": "C:\\Users\\owner\\Documents\\GitHub\\ViveCoding\\ViveCodingPj\\ViveCodingPj\\FstCoding.cpp",
+              "RelativeDocumentMoniker": "ViveCodingPj\\FstCoding.cpp",
+              "ToolTip": "C:\\Users\\owner\\Documents\\GitHub\\ViveCoding\\ViveCodingPj\\ViveCodingPj\\FstCoding.cpp",
+              "RelativeToolTip": "ViveCodingPj\\FstCoding.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-07-16T05:20:28.491Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
