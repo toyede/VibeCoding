@@ -3,8 +3,8 @@
   "WorkspaceRootPath": "C:\\Users\\owner\\Documents\\GitHub\\ViveCoding\\JWY\\Vibe_Coding\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{76FEC212-4D01-4BC5-B00A-DDF9515EB792}|Vibe_Coding\\Vibe_Coding.vcxproj|C:\\Users\\owner\\Documents\\GitHub\\ViveCoding\\JWY\\Vibe_Coding\\Vibe_Coding\\SetOperations.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{76FEC212-4D01-4BC5-B00A-DDF9515EB792}|Vibe_Coding\\Vibe_Coding.vcxproj|solutionrelative:Vibe_Coding\\SetOperations.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{76FEC212-4D01-4BC5-B00A-DDF9515EB792}|Vibe_Coding\\Vibe_Coding.vcxproj|C:\\Users\\owner\\Documents\\GitHub\\ViveCoding\\JWY\\Vibe_Coding\\Vibe_Coding\\formula_operations.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{76FEC212-4D01-4BC5-B00A-DDF9515EB792}|Vibe_Coding\\Vibe_Coding.vcxproj|solutionrelative:Vibe_Coding\\formula_operations.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -19,14 +19,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "SetOperations.cpp",
-              "DocumentMoniker": "C:\\Users\\owner\\Documents\\GitHub\\ViveCoding\\JWY\\Vibe_Coding\\Vibe_Coding\\SetOperations.cpp",
-              "RelativeDocumentMoniker": "Vibe_Coding\\SetOperations.cpp",
-              "ToolTip": "C:\\Users\\owner\\Documents\\GitHub\\ViveCoding\\JWY\\Vibe_Coding\\Vibe_Coding\\SetOperations.cpp",
-              "RelativeToolTip": "Vibe_Coding\\SetOperations.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Title": "formula_operations.cpp",
+              "DocumentMoniker": "C:\\Users\\owner\\Documents\\GitHub\\ViveCoding\\JWY\\Vibe_Coding\\Vibe_Coding\\formula_operations.cpp",
+              "RelativeDocumentMoniker": "Vibe_Coding\\formula_operations.cpp",
+              "ToolTip": "C:\\Users\\owner\\Documents\\GitHub\\ViveCoding\\JWY\\Vibe_Coding\\Vibe_Coding\\formula_operations.cpp",
+              "RelativeToolTip": "Vibe_Coding\\formula_operations.cpp",
+              "ViewState": "AgIAAKkBAAAAAAAAAAAAAKkBAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-07-16T05:31:24.404Z",
+              "WhenOpened": "2025-07-16T06:00:18.529Z",
               "EditorCaption": ""
             }
           ]
