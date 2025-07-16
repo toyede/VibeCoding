@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <string>
 #include <stack>
@@ -50,12 +49,12 @@ private:
         return c == '+' || c == '-' || c == '*' || c == '/' || c == '^';
     }
 
-    // 문자열에서 숫자 추출 (음수 포함)
+    // 문자열에서 숫자 추출 (음수, 양수 포함)
     bool isNumber(const string& str) {
         if (str.empty()) return false;
 
         size_t start = 0;
-        if (str[0] == '-') {
+        if (str[0] == '-' || str[0] == '+') {
             if (str.length() == 1) return false;
             start = 1;
         }
@@ -97,11 +96,11 @@ private:
                     current = "";
                 }
 
-                // 음수 처리: -, 연산자 앞, 괄호 뒤, 처음에 오는 -는 음수
-                if (c == '-') {
+                // 부호 처리: +, - 가 숫자 앞에 오는 경우 (양수/음수)
+                if (c == '-' || c == '+') {
                     if (tokens.empty() || isOpenBracket(tokens.back()[0]) ||
                         (tokens.back().length() == 1 && isOperator(tokens.back()[0]))) {
-                        current = "-";
+                        current = c; // + 또는 - 부호로 처리
                         continue;
                     }
                 }
@@ -416,7 +415,8 @@ public:
             string convertError = convertResult.second;
 
             if (!convertError.empty()) {
-                cout << "오류: " << convertError << endl;
+                cout << "변환 오류: " << convertError << endl;
+                cout << "처리된 입력: " << processedInput << endl;
                 cout << "다음 수식을 입력하세요." << endl;
                 continue;
             }
