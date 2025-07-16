@@ -188,7 +188,7 @@ int main() {
     std::getline(inputFile, line); // Consume the rest of the first line
 
     for (int i = 1; i <= n; ++i) {
-        std::cout << "== " << i << "¹øÂ° ´ÙÇ×½Ä ½Ö ==" << std::endl;
+        std::cout << "== " << i << "ï¿½ï¿½Â° ï¿½ï¿½ï¿½×½ï¿½ ï¿½ï¿½ ==" << std::endl;
 
         std::string poly_str1, poly_str2;
         
@@ -211,25 +211,25 @@ int main() {
         bool p2_valid = p2.parse(poly_str2);
 
         if (!p1_valid || !p2_valid) {
-            std::cout << "¿¬»êÀÌ ºÒ°¡´ÉÇÑ ´ÙÇ×½Ä ½ÖÀÔ´Ï´Ù." << std::endl << std::endl;
+            std::cout << "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½×½ï¿½ ï¿½ï¿½ï¿½Ô´Ï´ï¿½." << std::endl << std::endl;
             continue;
         }
 
-        std::cout << "Ã¹¹øÂ°: ";
+        std::cout << "Ã¹ï¿½ï¿½Â°: ";
         p1.print();
         std::cout << std::endl;
 
-        std::cout << "µÎ¹øÂ°: ";
+        std::cout << "ï¿½Î¹ï¿½Â°: ";
         p2.print();
         std::cout << std::endl;
 
         Polynomial sum = Polynomial::add(p1, p2);
-        std::cout << "µ¡¼À°á°ú: ";
+        std::cout << "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿?: ";
         sum.print();
         std::cout << std::endl;
 
         Polynomial prod = Polynomial::multiply(p1, p2);
-        std::cout << "°ö¼À°á°ú: ";
+        std::cout << "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿?: ";
         prod.print();
         std::cout << std::endl << std::endl;
     }
