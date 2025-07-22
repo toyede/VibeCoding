@@ -10,6 +10,22 @@
 
 using namespace std;
 
+// 괄호인지 확인 (소괄호, 중괄호, 대괄호)
+bool isOpenBracket(char c) {
+    return c == '(' || c == '{' || c == '[';
+}
+
+bool isCloseBracket(char c) {
+    return c == ')' || c == '}' || c == ']';
+}
+
+// 매칭되는 괄호인지 확인
+bool isMatchingBracket(char open, char close) {
+    return (open == '(' && close == ')') ||
+        (open == '{' && close == '}') ||
+        (open == '[' && close == ']');
+}
+
 class ExpressionCalculator {
 private:
     // 연산자 우선순위 반환
@@ -33,12 +49,12 @@ private:
         return c == '+' || c == '-' || c == '*' || c == '/' || c == '^';
     }
 
-    // 문자열에서 숫자 추출 (음수 포함)
+    // 문자열에서 숫자 추출 (음수, 양수 포함)
     bool isNumber(const string& str) {
         if (str.empty()) return false;
 
         size_t start = 0;
-        if (str[0] == '-') {
+        if (str[0] == '-' || str[0] == '+') {
             if (str.length() == 1) return false;
             start = 1;
         }
@@ -74,17 +90,17 @@ private:
             }
 
             // 괄호나 연산자인 경우
-            if (c == '(' || c == ')' || isOperator(c)) {
+            if (isOpenBracket(c) || isCloseBracket(c) || isOperator(c)) {
                 if (!current.empty()) {
                     tokens.push_back(current);
                     current = "";
                 }
 
-                // 음수 처리: -, 연산자 앞, 괄호 뒤, 처음에 오는 -는 음수
-                if (c == '-') {
-                    if (tokens.empty() || tokens.back() == "(" ||
+                // 부호 처리: +, - 가 숫자 앞에 오는 경우 (양수/음수)
+                if (c == '-' || c == '+') {
+                    if (tokens.empty() || isOpenBracket(tokens.back()[0]) ||
                         (tokens.back().length() == 1 && isOperator(tokens.back()[0]))) {
-                        current = "-";
+                        current = c; // + 또는 - 부호로 처리
                         continue;
                     }
                 }
@@ -113,12 +129,12 @@ private:
             char current = expression[i];
             char next = expression[i + 1];
 
-            // 숫자 다음에 '(' 가 오는 경우: 3(
-            if (isdigit(current) && next == '(') {
+            // 숫자 다음에 여는 괄호가 오는 경우: 3(, 3{, 3[
+            if (isdigit(current) && isOpenBracket(next)) {
                 return true;
             }
-            // ')' 다음에 숫자가 오는 경우: )3 (연산자가 없이)
-            if (current == ')' && isdigit(next)) {
+            // 닫는 괄호 다음에 숫자가 오는 경우: )3, }3, ]3
+            if (isCloseBracket(current) && isdigit(next)) {
                 return true;
             }
         }
@@ -137,12 +153,12 @@ private:
             if (i < expression.length() - 1) {
                 char next = expression[i + 1];
 
-                // 숫자 다음에 '(' 가 오는 경우: 3( → 3*(
-                if ((isdigit(current) || current == ')') && next == '(') {
+                // 숫자 다음에 여는 괄호가 오는 경우: 3( → 3*(
+                if ((isdigit(current) || isCloseBracket(current)) && isOpenBracket(next)) {
                     result += "*";
                 }
-                // ')' 다음에 숫자가 오는 경우: )3 → )*3
-                else if (current == ')' && (isdigit(next) || next == '-')) {
+                // 닫는 괄호 다음에 숫자가 오는 경우: )3 → )*3
+                else if (isCloseBracket(current) && (isdigit(next) || next == '-')) {
                     // 다음이 -인 경우, 그 다음이 숫자인지 확인
                     if (next == '-' && i + 2 < expression.length() && isdigit(expression[i + 2])) {
                         result += "*";
@@ -172,12 +188,12 @@ private:
                 if (!expectOperand) return false; // 연산자를 기대했는데 숫자가 옴
                 expectOperand = false;
             }
-            else if (token == "(") {
-                if (!expectOperand) return false; // 연산자를 기대했는데 ( 가 옴
+            else if (isOpenBracket(token[0])) {
+                if (!expectOperand) return false; // 연산자를 기대했는데 여는 괄호가 옴
                 expectOperand = true;
             }
-            else if (token == ")") {
-                if (expectOperand) return false; // 피연산자를 기대했는데 ) 가 옴
+            else if (isCloseBracket(token[0])) {
+                if (expectOperand) return false; // 피연산자를 기대했는데 닫는 괄호가 옴
                 expectOperand = false;
             }
             else if (isOperator(token[0]) && token.length() == 1) {
@@ -204,6 +220,7 @@ public:
 
         stack<string> operators;
         vector<string> postfix;
+        stack<char> bracketStack; // 괄호 매칭 확인용
 
         for (const string& token : tokens) {
             // 지원하지 않는 문자 검사
@@ -214,27 +231,36 @@ public:
             if (isNumber(token)) {
                 postfix.push_back(token);
             }
-            else if (token == "(") {
+            else if (isOpenBracket(token[0])) {
                 operators.push(token);
+                bracketStack.push(token[0]);
             }
-            else if (token == ")") {
-                bool foundOpenParen = false;
+            else if (isCloseBracket(token[0])) {
+                bool foundOpenBracket = false;
                 while (!operators.empty()) {
-                    if (operators.top() == "(") {
+                    if (isOpenBracket(operators.top()[0])) {
+                        char openBracket = operators.top()[0];
                         operators.pop();
-                        foundOpenParen = true;
-                        break;
+
+                        if (!bracketStack.empty() && isMatchingBracket(bracketStack.top(), token[0])) {
+                            bracketStack.pop();
+                            foundOpenBracket = true;
+                            break;
+                        }
+                        else {
+                            return make_pair("", "괄호 타입이 일치하지 않습니다.");
+                        }
                     }
                     postfix.push_back(operators.top());
                     operators.pop();
                 }
-                if (!foundOpenParen) {
+                if (!foundOpenBracket) {
                     return make_pair("", "괄호가 닫히지 않았습니다.");
                 }
             }
             else if (isOperator(token[0]) && token.length() == 1) {
                 // 거듭제곱은 우결합성 (right associative)
-                while (!operators.empty() && operators.top() != "(" &&
+                while (!operators.empty() && !isOpenBracket(operators.top()[0]) &&
                     ((token[0] != '^' && getPrecedence(operators.top()[0]) >= getPrecedence(token[0])) ||
                         (token[0] == '^' && getPrecedence(operators.top()[0]) > getPrecedence(token[0])))) {
                     postfix.push_back(operators.top());
@@ -248,7 +274,7 @@ public:
         }
 
         while (!operators.empty()) {
-            if (operators.top() == "(") {
+            if (isOpenBracket(operators.top()[0])) {
                 return make_pair("", "괄호가 닫히지 않았습니다.");
             }
             postfix.push_back(operators.top());
@@ -344,8 +370,9 @@ public:
     void run() {
         cout << "=== 수식 연산기 ===" << endl;
         cout << "중위 표기 수식을 입력하세요." << endl;
-        cout << "지원하는 연산자: +, -, *, /, ^(거듭제곱), ( )" << endl;
-        cout << "예시: 3 + 2 * 5, (1 + 2) * 3, 3 * -4, 4^2" << endl;
+        cout << "지원하는 연산자: +, -, *, /, ^(거듭제곱)" << endl;
+        cout << "지원하는 괄호: ( ), [ ], { } (모두 동일한 우선순위)" << endl;
+        cout << "예시: 3 + 2 * 5, [1 + 2] * 3, 3 * -4, 4^2, 2{3+1}" << endl;
         cout << "종료하려면 'exit' 또는 'quit'을 입력하세요." << endl;
         cout << endl;
 
@@ -388,7 +415,8 @@ public:
             string convertError = convertResult.second;
 
             if (!convertError.empty()) {
-                cout << "오류: " << convertError << endl;
+                cout << "변환 오류: " << convertError << endl;
+                cout << "처리된 입력: " << processedInput << endl;
                 cout << "다음 수식을 입력하세요." << endl;
                 continue;
             }
