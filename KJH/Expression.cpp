@@ -224,7 +224,7 @@ std::string infixToPostfix(const std::string& infix)
     return postfix.str(); // 완성된 후위 표기식 문자열을 반환합니다.
 }
 
-// 후위 표기식 문자열(예: "2 3 4 * +")을 평가하고 결과를 반환합니다.
+// 후위 표기식 문자열(예: "2 3 4 * +")을 계산하고 결과를 반환합니다.
 // 이 함수는 숫자와 연산자를 처리하며, 스택을 사용하여 계산을 수행합니다. 연산자를 만나면 스택에서 상위 두 값을 가져와 결과를 계산합니다.
 double evaluatePostfix(const std::string& postfix)
 {
