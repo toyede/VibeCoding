@@ -1,9 +1,13 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\owner\\Documents\\GitHub\\ViveCoding\\JWY\\Vibe_Coding\\",
+  "WorkspaceRootPath": "C:\\Users\\owner\\Documents\\GitHub\\VibeCoding\\JWY\\Vibe_Coding\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{76FEC212-4D01-4BC5-B00A-DDF9515EB792}|Vibe_Coding\\Vibe_Coding.vcxproj|C:\\Users\\owner\\Documents\\GitHub\\ViveCoding\\JWY\\Vibe_Coding\\Vibe_Coding\\formula_operations.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{76FEC212-4D01-4BC5-B00A-DDF9515EB792}|Vibe_Coding\\Vibe_Coding.vcxproj|C:\\Users\\owner\\Documents\\GitHub\\VibeCoding\\JWY\\Vibe_Coding\\Vibe_Coding\\Joseon_Dynasty.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{76FEC212-4D01-4BC5-B00A-DDF9515EB792}|Vibe_Coding\\Vibe_Coding.vcxproj|solutionrelative:Vibe_Coding\\Joseon_Dynasty.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{76FEC212-4D01-4BC5-B00A-DDF9515EB792}|Vibe_Coding\\Vibe_Coding.vcxproj|C:\\Users\\owner\\Documents\\GitHub\\VibeCoding\\JWY\\Vibe_Coding\\Vibe_Coding\\formula_operations.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{76FEC212-4D01-4BC5-B00A-DDF9515EB792}|Vibe_Coding\\Vibe_Coding.vcxproj|solutionrelative:Vibe_Coding\\formula_operations.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
@@ -19,12 +23,25 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "Joseon_Dynasty.cpp",
+              "DocumentMoniker": "C:\\Users\\owner\\Documents\\GitHub\\VibeCoding\\JWY\\Vibe_Coding\\Vibe_Coding\\Joseon_Dynasty.cpp",
+              "RelativeDocumentMoniker": "Vibe_Coding\\Joseon_Dynasty.cpp",
+              "ToolTip": "C:\\Users\\owner\\Documents\\GitHub\\VibeCoding\\JWY\\Vibe_Coding\\Vibe_Coding\\Joseon_Dynasty.cpp",
+              "RelativeToolTip": "Vibe_Coding\\Joseon_Dynasty.cpp",
+              "ViewState": "AgIAALwAAAAAAAAAAAAcwM8AAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-07-22T07:05:12.595Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "formula_operations.cpp",
-              "DocumentMoniker": "C:\\Users\\owner\\Documents\\GitHub\\ViveCoding\\JWY\\Vibe_Coding\\Vibe_Coding\\formula_operations.cpp",
+              "DocumentMoniker": "C:\\Users\\owner\\Documents\\GitHub\\VibeCoding\\JWY\\Vibe_Coding\\Vibe_Coding\\formula_operations.cpp",
               "RelativeDocumentMoniker": "Vibe_Coding\\formula_operations.cpp",
-              "ToolTip": "C:\\Users\\owner\\Documents\\GitHub\\ViveCoding\\JWY\\Vibe_Coding\\Vibe_Coding\\formula_operations.cpp",
+              "ToolTip": "C:\\Users\\owner\\Documents\\GitHub\\VibeCoding\\JWY\\Vibe_Coding\\Vibe_Coding\\formula_operations.cpp",
               "RelativeToolTip": "Vibe_Coding\\formula_operations.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB4AAAASAAAAAAAAAA==",
+              "ViewState": "AgIAALYBAAAAAAAAAAAAAC0BAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-07-16T06:00:18.529Z",
               "EditorCaption": ""
