@@ -10,26 +10,12 @@
 
 using namespace std;
 
-/**
- * @brief Graph 클래스는 사람 관계 네트워크를 나타냅니다.
- * 
- * 이 클래스는 인접 리스트를 사용하여 그래프를 구현하고,
- * 케빈 베이컨 게임과 관련된 다양한 기능을 제공합니다.
- */
 class Graph
 {
 public:
-    // 인접 리스트: 각 사람(노드)에 연결된 다른 사람들의 목록을 저장합니다.
     map<int, set<int>> adj;
-    // 전체 사람 목록: 그래프에 존재하는 모든 사람(노드)을 저장합니다.
     set<int> people;
 
-    /**
-     * @brief 두 사람 사이에 관계(간선)를 추가합니다.
-     * 
-     * @param u 첫 번째 사람 (노드)
-     * @param v 두 번째 사람 (노드)
-     */
     void addEdge(int u, int v)
     {
         adj[u].insert(v);
@@ -38,11 +24,6 @@ public:
         people.insert(v);
     }
 
-    /**
-     * @brief 파일에서 데이터를 읽어 그래프를 생성합니다.
-     * 
-     * @param filename 관계 데이터가 담긴 파일 이름
-     */
     void buildGraphFromFile(const string& filename)
     {
         ifstream file(filename);
@@ -55,6 +36,11 @@ public:
         string line;
         while (getline(file, line))
         {
+            if (!line.empty() && line.back() == '\r')
+            {
+                line.pop_back();
+            }
+
             stringstream ss(line);
             vector<int> group;
             int person;
@@ -64,7 +50,6 @@ public:
                 people.insert(person);
             }
 
-            // 그룹 내 모든 사람들 사이에 양방향 관계를 추가합니다.
             if (group.size() > 1)
             {
                 for (size_t i = 0; i < group.size(); ++i)
@@ -79,18 +64,11 @@ public:
         file.close();
     }
 
-    /**
-     * @brief 너비 우선 탐색(BFS)을 사용하여 두 사람 사이의 최단 거리를 계산합니다.
-     * 
-     * @param start 시작 사람 (노드)
-     * @param end 목표 사람 (노드)
-     * @return int 최단 거리 (연결되지 않은 경우 -1)
-     */
     int getDistance(int start, int end)
     {
         if (people.find(start) == people.end() || people.find(end) == people.end())
         {
-            return -1; // 노드가 존재하지 않음
+            return -1;
         }
         if (start == end)
         {
@@ -122,14 +100,9 @@ public:
                 }
             }
         }
-        return -1; // 경로 없음
+        return -1;
     }
 
-    /**
-     * @brief 친구가 없는 사람(Lone Wolf) 목록을 찾습니다.
-     * 
-     * @return vector<int> Lone Wolf 목록
-     */
     vector<int> findLoneWolves()
     {
         vector<int> loneWolves;
@@ -143,11 +116,6 @@ public:
         return loneWolves;
     }
 
-    /**
-     * @brief 그래프에 존재하는 그룹(연결된 컴포넌트)의 수를 계산합니다.
-     * 
-     * @return int 그룹의 수
-     */
     int countGroups()
     {
         if (people.empty())
@@ -183,13 +151,7 @@ public:
         }
         return groupCount;
     }
-    
-    /**
-     * @brief 특정 사람이 속한 그룹의 모든 멤버를 찾습니다.
-     * 
-     * @param start_node 그룹을 찾을 시작 사람 (노드)
-     * @return set<int> 그룹 멤버 목록
-     */
+
     set<int> getGroupMembers(int start_node)
     {
         set<int> group_members;
@@ -219,29 +181,22 @@ public:
         return group_members;
     }
 
-    /**
-     * @brief 3단계 이내에 자신의 그룹 내 모든 사람에게 연락할 수 있는 사람을 찾습니다.
-     * 
-     * @return vector<int> 3단계 이내 연락 가능한 사람 목록
-     */
     vector<int> findThreeStepConnectors()
     {
         vector<int> connectors;
         for (int person : people)
         {
-            // Lone wolf는 후보에서 제외합니다.
             if (adj.find(person) == adj.end() || adj[person].empty())
             {
                 continue;
             }
-            
+
             set<int> groupMembers = getGroupMembers(person);
             if (groupMembers.size() <= 1) continue;
 
             int max_dist = 0;
             bool reachable_to_all = true;
 
-            // 그룹 내 모든 멤버까지의 거리를 계산합니다.
             for (int member : groupMembers)
             {
                 if (person == member) continue;
@@ -257,7 +212,6 @@ public:
                 }
             }
 
-            // 최대 거리가 3 이하인 경우, 후보에 추가합니다.
             if (reachable_to_all && max_dist > 0 && max_dist <= 3)
             {
                 connectors.push_back(person);
@@ -267,9 +221,6 @@ public:
     }
 };
 
-/**
- * @brief 사용자에게 메뉴를 출력합니다.
- */
 void printMenu()
 {
     cout << "\n--- 케빈 베이컨 게임 ---" << endl;
@@ -282,13 +233,10 @@ void printMenu()
     cout << "선택: ";
 }
 
-/**
- * @brief 프로그램의 메인 함수입니다.
- */
 int main()
 {
     Graph g;
-    g.buildGraphFromFile("kb.txt");
+    g.buildGraphFromFile("C:/ViveCoding/KJH/kb.txt");
 
     int choice;
     while (true)
