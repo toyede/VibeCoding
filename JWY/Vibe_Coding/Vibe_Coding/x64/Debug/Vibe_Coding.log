@@ -1,4 +1,2 @@
-﻿  Joseon_Dynasty.cpp
-C:\Users\owner\Documents\GitHub\VibeCoding\JWY\Vibe_Coding\Vibe_Coding\Joseon_Dynasty.cpp(240,20): warning C4267: '초기화 중': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\owner\Documents\GitHub\VibeCoding\JWY\Vibe_Coding\Vibe_Coding\Joseon_Dynasty.cpp(295,44): warning C4267: '=': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+﻿  Kevin_B.cpp
   Vibe_Coding.vcxproj -> C:\Users\owner\Documents\GitHub\VibeCoding\JWY\Vibe_Coding\x64\Debug\Vibe_Coding.exe
