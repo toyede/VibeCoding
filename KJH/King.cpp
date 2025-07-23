@@ -13,7 +13,6 @@
 #include <string>    // 문자열 처리 (string)
 #include <vector>    // 동적 배열 (vector)
 #include <map>       // 키-값 쌍의 연관 컨테이너 (map)
-#include <algorithm> // 표준 알고리즘 (find, sort 등)
 #include <cstdlib>   // C 표준 라이브러리 (system 함수)
 
 /**
