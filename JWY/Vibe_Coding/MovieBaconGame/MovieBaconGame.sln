@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36301.6 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "MovieBaconGame", "MovieBaconGame\MovieBaconGame.pyproj", "{ACDEC90B-4F9A-4A5C-A56F-DFC510EC3845}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ACDEC90B-4F9A-4A5C-A56F-DFC510EC3845}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACDEC90B-4F9A-4A5C-A56F-DFC510EC3845}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {89C4CE21-3BF4-42E8-8054-B1B8DF63EFF2}
+	EndGlobalSection
+EndGlobal
