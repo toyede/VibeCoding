@@ -1,440 +1,306 @@
+// ÀÌ ÆÄÀÏÀº EUC-KR ÀÎÄÚµùÀ¸·Î ÀúÀåÇØ¾ß ÇÕ´Ï´Ù.
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <sstream>
-#include <locale.h>
 
-// í‘œì¤€ ë¼ì´ë¸ŒëŸ¬ë¦¬ì˜ íŠ¹ì • ê¸°ëŠ¥ì„ ì‚¬ìš©í•˜ê¸° ìœ„í•´ ì„ ì–¸
-using std::cout;
-using std::endl;
-using std::ifstream;
-using std::string;
-using std::stringstream;
+using namespace std;
 
-// ì „ë°© ì„ ì–¸
-struct Node;
-
-// ìì‹ ë…¸ë“œë“¤ì„ ê´€ë¦¬í•˜ê¸° ìœ„í•œ ì—°ê²° ë¦¬ìŠ¤íŠ¸ êµ¬ì¡°ì²´
-struct ChildNode {
-    Node* king_node;    // ìì‹ ì™• ë…¸ë“œë¥¼ ê°€ë¦¬í‚¤ëŠ” í¬ì¸í„°
-    ChildNode* next; // ë‹¤ìŒ ìì‹ ë…¸ë“œë¥¼ ê°€ë¦¬í‚¤ëŠ” í¬ì¸í„°
-};
-
-// ì™• í•œ ëª…ì˜ ì •ë³´ë¥¼ ë‹´ëŠ” íŠ¸ë¦¬ ë…¸ë“œ êµ¬ì¡°ì²´
+// ³ëµå ±¸Á¶Ã¼: ¿Õ ÀÌ¸§, ºÎ¸ğ, Ã¹Â° ÀÚ½Ä, ´ÙÀ½ ÇüÁ¦ Æ÷ÀÎÅÍ
 struct Node {
-    string name;          // ì™•ì˜ ì´ë¦„
-    Node* parent;         // ë¶€ëª¨ ë…¸ë“œë¥¼ ê°€ë¦¬í‚¤ëŠ” í¬ì¸í„°
-    ChildNode* children;  // ìì‹ ë…¸ë“œë“¤ì˜ ì—°ê²° ë¦¬ìŠ¤íŠ¸ì˜ ì‹œì‘
-    int child_count;      // ìì‹ì˜ ìˆ˜
+    string name;
+    Node* parent;
+    Node* firstChild;
+    Node* nextSibling;
 };
 
-// í•¨ìˆ˜ ì„ ì–¸
-Node* createNode(const string& name);
-void addChild(Node* parent, Node* child);
-Node* findNode(Node* current, const string& name);
-void printTree(Node* current, int depth);
-void deleteTree(Node* current);
-void answerQuestions(Node* root, const string& filename);
-void printAllKings(Node* current);
-void printAllKingsReverse(Node* current);
-int countKings(Node* current);
-void findDescendants(Node* startNode, bool& first);
-void findKingsWithNoRoyalHeir(Node* current, bool& first);
-Node* findKingWithMostRoyalHeirs(Node* root);
-void findBrothers(Node* root, const string& kingName);
-void printAncestors(Node* root, const string& kingName);
-int countKingsWithMultipleHeirs(Node* root);
-int findGenerationGap(Node* root, const string& ancestorName, const string& descendantName);
+// ÃÖ´ë ³ëµå ¼ö
+const int MAX_NODES = 100;
+Node nodes[MAX_NODES];
+int nodeCount = 0;
 
-
-// í”„ë¡œê·¸ë¨ì˜ ì‹œì‘ì 
-int main() {
-    // í•œê¸€ ì…ì¶œë ¥ì„ ìœ„í•œ ë¡œì¼€ì¼ ì„¤ì •
-    setlocale(LC_ALL, "ko_KR.UTF-8");
-
-    Node* root = nullptr;
-    ifstream file("ì¡°ì„ ì™•ì¡°.txt");
-    string line;
-
-    if (!file.is_open()) {
-        cout << "'ì¡°ì„ ì™•ì¡°.txt' íŒŒì¼ì„ ì—´ ìˆ˜ ì—†ìŠµë‹ˆë‹¤." << endl;
-        return 1;
+// ÀÌ¸§À¸·Î ³ëµå¸¦ Ã£°Å³ª, ¾øÀ¸¸é »õ·Î »ı¼º
+Node* findOrCreate(const string& name) {
+    for (int i = 0; i < nodeCount; ++i) {
+        if (nodes[i].name == name) return &nodes[i];
     }
-
-    // 'ì¡°ì„ ì™•ì¡°.txt' íŒŒì¼ ì½ê³  íŠ¸ë¦¬ êµ¬ì„±
-    while (getline(file, line)) {
-        // UTF-8 BOM(Byte Order Mark) ì œê±°
-        if (line.size() >= 3 && line[0] == (char)0xEF && line[1] == (char)0xBB && line[2] == (char)0xBF) {
-            line = line.substr(3);
-        }
-        
-        stringstream ss(line);
-        string child_name, parent_name;
-        ss >> child_name >> parent_name;
-
-        if (parent_name.empty()) { // ë¶€ëª¨ê°€ ì—†ëŠ” ê²½ìš°, ì¦‰ íƒœì¡°
-            if (root == nullptr) {
-                root = createNode(child_name);
-            }
-        } else {
-            Node* parent_node = findNode(root, parent_name);
-            if (parent_node) {
-                Node* child_node = findNode(root, child_name);
-                if(child_node == nullptr) {
-                    child_node = createNode(child_name);
-                }
-                addChild(parent_node, child_node);
-            }
-        }
-    }
-    file.close();
-
-    // ìƒì„±ëœ íŠ¸ë¦¬ êµ¬ì¡° ì¶œë ¥
-    cout << "--- ì¡°ì„  ì™•ì¡° íŠ¸ë¦¬ êµ¬ì¡° ---" << endl;
-    printTree(root, 0);
-    cout << "--------------------------" << endl << endl;
-
-    // 'ì§ˆë¬¸.txt' íŒŒì¼ì˜ ì§ˆë¬¸ì— ë‹µë³€
-    answerQuestions(root, "ì§ˆë¬¸.txt");
-
-    // ë™ì  í• ë‹¹ëœ ë©”ëª¨ë¦¬ í•´ì œ
-    deleteTree(root);
-
-    return 0;
+    nodes[nodeCount].name = name;
+    nodes[nodeCount].parent = nullptr;
+    nodes[nodeCount].firstChild = nullptr;
+    nodes[nodeCount].nextSibling = nullptr;
+    return &nodes[nodeCount++];
 }
 
-// ìƒˆë¡œìš´ ì™• ë…¸ë“œë¥¼ ìƒì„±í•˜ëŠ” í•¨ìˆ˜
-Node* createNode(const string& name) {
-    Node* newNode = new Node();
-    newNode->name = name;
-    newNode->parent = nullptr;
-    newNode->children = nullptr;
-    newNode->child_count = 0;
-    return newNode;
-}
-
-// ë¶€ëª¨ ë…¸ë“œì— ìì‹ ë…¸ë“œë¥¼ ì¶”ê°€í•˜ëŠ” í•¨ìˆ˜
-void addChild(Node* parent, Node* child) {
-    child->parent = parent;
-    parent->child_count++;
-
-    ChildNode* newChildNode = new ChildNode();
-    newChildNode->king_node = child;
-    newChildNode->next = parent->children; // ìƒˆë¡œìš´ ìì‹ì„ ë¦¬ìŠ¤íŠ¸ì˜ ë§¨ ì•ì— ì¶”ê°€
-    parent->children = newChildNode;
-}
-
-// íŠ¸ë¦¬ì—ì„œ íŠ¹ì • ì´ë¦„ì„ ê°€ì§„ ë…¸ë“œë¥¼ ì°¾ëŠ” í•¨ìˆ˜ (ì „ìœ„ ìˆœíšŒ)
-Node* findNode(Node* current, const string& name) {
-    if (current == nullptr) {
-        return nullptr;
-    }
-    if (current->name == name) {
-        return current;
-    }
-
-    ChildNode* child_list = current->children;
-    while (child_list != nullptr) {
-        Node* found = findNode(child_list->king_node, name);
-        if (found) {
-            return found;
-        }
-        child_list = child_list->next;
+// **Áú¹®¿ë**: ÀÌ¸§ÀÌ ÀÌ¹Ì ÀÖ´Â ³ëµå¸¦ Ã£°í, ¾øÀ¸¸é nullptr ¸®ÅÏ
+Node* findNode(const string& name) {
+    for (int i = 0; i < nodeCount; ++i) {
+        if (nodes[i].name == name) return &nodes[i];
     }
     return nullptr;
 }
 
-// íŠ¸ë¦¬ì˜ ì „ì²´ êµ¬ì¡°ë¥¼ ì¬ê·€ì ìœ¼ë¡œ ì¶œë ¥í•˜ëŠ” í•¨ìˆ˜
-void printTree(Node* current, int depth) {
-    if (current == nullptr) {
-        return;
+// ºÎ¸ğ-ÀÚ½Ä °ü°è¸¦ Æ®¸®¿¡ Ãß°¡
+void addRelation(const string& childName, const string& parentName) {
+    Node* child = findOrCreate(childName);
+    Node* parent = findOrCreate(parentName);
+    child->parent = parent;
+    if (!parent->firstChild) {
+        parent->firstChild = child;
     }
-    for (int i = 0; i < depth; ++i) {
-        cout << "  ";
-    }
-    cout << "-> " << current->name << endl;
-
-    ChildNode* child_list = current->children;
-    while (child_list != nullptr) {
-        printTree(child_list->king_node, depth + 1);
-        child_list = child_list->next;
+    else {
+        Node* cur = parent->firstChild;
+        while (cur->nextSibling) cur = cur->nextSibling;
+        cur->nextSibling = child;
     }
 }
 
-// í• ë‹¹ëœ íŠ¸ë¦¬ ë©”ëª¨ë¦¬ë¥¼ ì¬ê·€ì ìœ¼ë¡œ í•´ì œí•˜ëŠ” í•¨ìˆ˜ (í›„ìœ„ ìˆœíšŒ)
-void deleteTree(Node* current) {
-    if (current == nullptr) {
-        return;
-    }
-    ChildNode* child_list = current->children;
-    while (child_list != nullptr) {
-        ChildNode* next = child_list->next;
-        deleteTree(child_list->king_node);
-        delete child_list;
-        child_list = next;
-    }
-    delete current;
+// ÀÚ½Ä ¼ö °è»ê
+int countChildren(Node* node) {
+    int cnt = 0;
+    for (Node* c = node->firstChild; c; c = c->nextSibling)
+        ++cnt;
+    return cnt;
 }
 
-// 'ì§ˆë¬¸.txt'ë¥¼ ì½ê³  ê° ì§ˆë¬¸ì— ëŒ€í•œ ë‹µì„ ì²˜ë¦¬í•˜ëŠ” í•¨ìˆ˜
-void answerQuestions(Node* root, const string& filename) {
-    ifstream file(filename);
-    if (!file.is_open()) {
-        cout << "'" << filename << "' íŒŒì¼ì„ ì—´ ìˆ˜ ì—†ìŠµë‹ˆë‹¤." << endl;
-        return;
+// ¼­ºêÆ®¸® ¿¹»Ú°Ô Ãâ·Â ÇïÆÛ (printTreePretty¿¡¼­ È£Ãâ)
+void printSubtree(Node* node, const string& prefix, bool isLast) {
+    if (!node) return;
+    cout << prefix << (isLast ? "¦¦¦¡" : "¦§¦¡") << node->name << "\n";
+    string newPrefix = prefix + (isLast ? "   " : "¦¢  ");
+    for (Node* c = node->firstChild; c; c = c->nextSibling) {
+        bool last = (c->nextSibling == nullptr);
+        printSubtree(c, newPrefix, last);
     }
+}
 
+// Æ®¸® ÀüÃ¼ ¿¹»Ú°Ô Ãâ·Â
+void printTreePretty(Node* root) {
+    if (!root) return;
+    cout << root->name << "\n";
+    for (Node* c = root->firstChild; c; c = c->nextSibling) {
+        bool last = (c->nextSibling == nullptr);
+        printSubtree(c, "", last);
+    }
+}
+
+// pre-order ¼øÀ¸·Î ÀÌ¸§À» ¹è¿­¿¡ Ã¤¿ò
+void fillOrder(Node* node, string order[], int& idx) {
+    if (!node) return;
+    order[idx++] = node->name;
+    for (Node* c = node->firstChild; c; c = c->nextSibling)
+        fillOrder(c, order, idx);
+}
+
+// ¹è¿­À» ¿ª¼øÀ¸·Î Ãâ·Â
+void printReverse(const string order[], int cnt) {
+    for (int i = cnt - 1; i >= 0; --i)
+        cout << order[i] << " ";
+}
+
+// ÁÖ¾îÁø ³ëµåÀÇ ¸ğµç ÈÄ¼Õ(pre-order) Ãâ·Â
+void printDescendants(Node* node) {
+    if (!node) return;
+    for (Node* c = node->firstChild; c; c = c->nextSibling) {
+        cout << c->name << " ";
+        printDescendants(c);
+    }
+}
+
+// ÀÚ½ÄÀÌ ¾ø´Â ³ëµå(Á÷°è ÈÄ¼ÕÀÌ ¿ÕÀÌ µÇÁö ¸øÇÑ ¿Õ) Ãâ·Â
+void printLeaves(Node* node) {
+    if (!node) return;
+    if (!node->firstChild) {
+        cout << node->name << " ";
+    }
+    for (Node* c = node->firstChild; c; c = c->nextSibling)
+        printLeaves(c);
+}
+
+// Æ¯Á¤ ³ëµåÀÇ Á÷°è ¼±Á¶¸¦ ·çÆ®±îÁö Ãâ·Â
+void printAncestors(Node* node) {
+    Node* p = node->parent;
+    while (p) {
+        cout << p->name << " ";
+        p = p->parent;
+    }
+}
+
+// ÈÄ¼Õ¿¡¼­ Á¶»ó±îÁö ¼¼´ë °Å¸® °è»ê
+int generationDistance(Node* descendant, const string& ancestorName) {
+    int dist = 0;
+    Node* p = descendant;
+    while (p->parent) {
+        p = p->parent;
+        ++dist;
+        if (p->name == ancestorName) return dist;
+    }
+    return -1;
+}
+
+int main() {
+    // 1) 'Á¶¼±¿ÕÁ¶.txt' ÀĞ¾î Æ®¸® ±¸¼º
+    ifstream fin("Á¶¼±¿ÕÁ¶.txt");
     string line;
-    // ì²« ì¤„(ì§ˆë¬¸ ê°œìˆ˜) ì½ê¸° (BOM ì²˜ë¦¬ í¬í•¨)
-    getline(file, line);
-    if (line.size() >= 3 && line[0] == (char)0xEF && line[1] == (char)0xBB && line[2] == (char)0xBF) {
-        line = line.substr(3);
+    getline(fin, line);
+    findOrCreate(line);  // ·çÆ®
+    while (getline(fin, line)) {
+        if (line.empty()) continue;
+        int sp = line.find(' ');
+        string child = line.substr(0, sp);
+        string parent = line.substr(sp + 1);
+        addRelation(child, parent);
     }
-    
-    int question_count = 0;
-    try {
-        question_count = stoi(line);
-    } catch (...) {
-        // ìˆ«ì ë³€í™˜ ì‹¤íŒ¨ ì‹œ 0ìœ¼ë¡œ ìœ ì§€
+    fin.close();
+
+    // ·çÆ® Ã£±â
+    Node* root = nullptr;
+    for (int i = 0; i < nodeCount; ++i) {
+        if (!nodes[i].parent) {
+            root = &nodes[i];
+            break;
+        }
     }
 
-    for (int i = 1; i <= question_count; ++i) {
-        if (!getline(file, line)) break;
-        cout << "ì§ˆë¬¸ " << i << ": " << line << endl;
-        cout << "ë‹µï¿½ï¿½ï¿½: ";
+    // ¿¹»Û Æ®¸® Ãâ·Â
+    printTreePretty(root);
 
-        if (line.find("ìˆœì„œëŒ€ë¡œ ì¶œë ¥") != string::npos) {
-            printAllKings(root);
-        } else if (line.find("ì—­ìˆœìœ¼ë¡œ ì¶œë ¥") != string::npos) {
-            printAllKingsReverse(root);
-        } else if (line.find("ëª¨ë‘ ëª‡ ëª…ì¸ê°€") != string::npos) {
-            cout << countKings(root) << "ëª…";
-        } else if (line.find("í›„ì†ì€ ëˆ„êµ¬ëˆ„êµ¬ì¸ê°€") != string::npos) {
-            size_t pos = line.find("ì˜ í›„ì†ì€");
-            if (pos != string::npos) {
-                string kingPart = line.substr(0, pos);
-                size_t space_pos = kingPart.rfind(' ');
-                string kingName = (space_pos != string::npos) ? kingPart.substr(space_pos + 1) : kingPart;
-                
-                Node* startNode = findNode(root, kingName);
-                if (startNode) {
-                    bool first = true;
-                    findDescendants(startNode, first);
-                    if(first) cout << "ì—†ìŒ";
-                } else {
-                    cout << "'" << kingName << "'ì„(ë¥¼) ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.";
+    // pre-order ÀÌ¸§ ¹è¿­ ÁØºñ
+    string order[MAX_NODES];
+    int idx = 0;
+    fillOrder(root, order, idx);
+
+    // 2) 'Áú¹®.txt' ÀĞ°í µ¿Àû Ã³¸®
+    ifstream qfin("Áú¹®.txt");
+    int Q;
+    qfin >> Q;
+    getline(qfin, line);  // °³Çà Á¦°Å
+
+    for (int qi = 0; qi < Q; ++qi) {
+        getline(qfin, line);
+        bool answered = false;
+
+        // 1) ¼ø¼­´ë·Î
+        if (line.find("¼ø¼­´ë·Î") != string::npos) {
+            for (int i = 0; i < idx; ++i) cout << order[i] << " ";
+            answered = true;
+        }
+        // 2) ¿ª¼øÀ¸·Î
+        else if (line.find("¿ª¼ø") != string::npos) {
+            printReverse(order, idx);
+            answered = true;
+        }
+        // 3) ÀüÃ¼ ÀÎ¿ø
+        else if (line.find("¸ğµÎ ¸î") != string::npos) {
+            cout << nodeCount;
+            answered = true;
+        }
+        // 4) ¡°XÀÇ ÈÄ¼ÕÀº¡±
+        else if (line.find("ÀÇ ÈÄ¼Õ") != string::npos && line.find("¸î") == string::npos) {
+            size_t pos = line.find("ÀÇ ÈÄ¼Õ");
+            size_t start = line.rfind(' ', pos) + 1;
+            string name = line.substr(start, pos - start);
+            Node* nd = findNode(name);
+            if (nd && nd->firstChild) {
+                printDescendants(nd);
+            }
+            else {
+                cout << "´äÀÌ ¾ø½À´Ï´Ù.";
+            }
+            answered = true;
+        }
+        // 5) ¡°µÇÁö ¸øÇÑ ¿Õ¡± (ÀÚ½Ä ¾ø´Â ¿Õ)
+        else if (line.find("µÇÁö ¸øÇÑ") != string::npos) {
+            printLeaves(root);
+            answered = true;
+        }
+        // 6) ¡°°¡Àå ¸¹Àº¡± (ÀÚ½Ä ¼ö ÃÖ´ë)
+        else if (line.find("°¡Àå ¸¹Àº") != string::npos) {
+            int maxC = 0;
+            string who;
+            for (int i = 0; i < nodeCount; ++i) {
+                int c = countChildren(&nodes[i]);
+                if (c > maxC) {
+                    maxC = c;
+                    who = nodes[i].name;
                 }
             }
-        } else if (line.find("ì™•ì´ ë˜ì§€ ëª»í•œ ì™•") != string::npos) {
-            bool first = true;
-            findKingsWithNoRoyalHeir(root, first);
-        } else if (line.find("ê°€ì¥ ë§ì€ ì™•ì€ ëˆ„êµ¬ì¸ê°€") != string::npos) {
-            Node* king = findKingWithMostRoyalHeirs(root);
-            if (king) {
-                cout << king->name << " (" << king->child_count << "ëª…)";
-            }
-        } else if (line.find("í˜•ì œë¡œ ì¡°ì„ ì˜ ì™•ì´ ëœ ì‚¬ëŒ") != string::npos) {
-            size_t pos = line.find("ì˜ í˜•ì œë¡œ");
-            if (pos != string::npos) {
-                string kingName = line.substr(0, pos);
-                findBrothers(root, kingName);
-            }
-        } else if (line.find("ì§ê³„ ì„ ì¡°ë¥¼ ëª¨ë‘ ì¶œë ¥") != string::npos) {
-            size_t pos = line.find("ì˜ ì§ê³„ ì„ ì¡°");
-            if (pos != string::npos) {
-                string kingName = line.substr(0, pos);
-                printAncestors(root, kingName);
-            }
-        } else if (line.find("2ëª… ì´ìƒ ì™•ì´ ëœ ì™•ì€ ëª‡ ëª…") != string::npos) {
-            cout << countKingsWithMultipleHeirs(root) << "ëª…";
-        } else if (line.find("ì€") != string::npos && line.find("ì˜ ëª‡ ëŒ€ í›„ì†ì¸ê°€") != string::npos) {
-            size_t pos_eun = line.find("ì€ ");
-            size_t pos_ui = line.find("ì˜ ");
-            if (pos_eun != string::npos && pos_ui != string::npos) {
-                string descendantName = line.substr(0, pos_eun);
-                string ancestorPart = line.substr(pos_eun + sizeof("ì€ ") - 1);
-                size_t ancestor_end_pos = ancestorPart.find("ì˜ ");
-                if (ancestor_end_pos != string::npos) {
-                    string ancestorName = ancestorPart.substr(0, ancestor_end_pos);
-                    int gap = findGenerationGap(root, ancestorName, descendantName);
-                    if (gap > 0) {
-                        cout << gap << "ëŒ€ í›„ì†ì…ë‹ˆë‹¤.";
-                    } else {
-                        cout << "ê´€ê³„ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.";
+            if (maxC > 0) cout << who;
+            else          cout << "´äÀÌ ¾ø½À´Ï´Ù.";
+            answered = true;
+        }
+        // 7) ¡°XÀÇ ÇüÁ¦¡±
+        else if (line.find("ÀÇ ÇüÁ¦") != string::npos) {
+            size_t pos = line.find("ÀÇ ÇüÁ¦");
+            size_t start = line.rfind(' ', pos) + 1;
+            string name = line.substr(start, pos - start);
+            Node* nd = findNode(name);
+            if (nd && nd->parent) {
+                bool any = false;
+                for (Node* c = nd->parent->firstChild; c; c = c->nextSibling) {
+                    if (c != nd) {
+                        cout << c->name << " ";
+                        any = true;
                     }
                 }
+                if (!any) cout << "´äÀÌ ¾ø½À´Ï´Ù.";
             }
-        } else {
-            cout << "ì•Œ ìˆ˜ ì—†ëŠ” ì§ˆë¬¸ì…ë‹ˆë‹¤.";
+            else {
+                cout << "´äÀÌ ¾ø½À´Ï´Ù.";
+            }
+            answered = true;
         }
-        cout << endl << endl;
-    }
-    file.close();
-}
-
-// 1. ëª¨ë“  ì™•ì„ ìˆœì„œëŒ€ë¡œ ì¶œë ¥ (ì „ìœ„ ìˆœíšŒ)
-void printAllKings(Node* current) {
-    if (current == nullptr) return;
-    cout << current->name << " ";
-    ChildNode* child_list = current->children;
-    while (child_list != nullptr) {
-        printAllKings(child_list->king_node);
-        child_list = child_list->next;
-    }
-}
-
-// 2. ëª¨ë“  ì™•ì„ ì—­ìˆœìœ¼ë¡œ ì¶œë ¥ (í›„ìœ„ ìˆœíšŒ)
-void printAllKingsReverse(Node* current) {
-    if (current == nullptr) return;
-    ChildNode* child_list = current->children;
-    while (child_list != nullptr) {
-        printAllKingsReverse(child_list->king_node);
-        child_list = child_list->next;
-    }
-    cout << current->name << " ";
-}
-
-// 3. ëª¨ë“  ì™•ì˜ ìˆ˜ë¥¼ ì„¸ëŠ” í•¨ìˆ˜
-int countKings(Node* current) {
-    if (current == nullptr) return 0;
-    int count = 1;
-    ChildNode* child_list = current->children;
-    while (child_list != nullptr) {
-        count += countKings(child_list->king_node);
-        child_list = child_list->next;
-    }
-    return count;
-}
-
-// 4. íŠ¹ì • ì™•ì˜ ëª¨ë“  í›„ì†ì„ ì¶œë ¥í•˜ëŠ” í•¨ìˆ˜
-void findDescendants(Node* startNode, bool& first) {
-    if (startNode == nullptr) return;
-    ChildNode* child_list = startNode->children;
-    while (child_list != nullptr) {
-        if (!first) cout << ", ";
-        cout << child_list->king_node->name;
-        first = false;
-        findDescendants(child_list->king_node, first);
-        child_list = child_list->next;
-    }
-}
-
-// 5. ì§ê³„ í›„ì†ì´ ì™•ì´ ë˜ì§€ ëª»í•œ ì™•(ìì‹ì´ ì—†ëŠ” ì™•)ì„ ì°¾ëŠ” í•¨ìˆ˜
-void findKingsWithNoRoyalHeir(Node* current, bool& first) {
-    if (current == nullptr) return;
-    if (current->child_count == 0) {
-        if (!first) cout << ", ";
-        cout << current->name;
-        first = false;
-    }
-    ChildNode* child_list = current->children;
-    while (child_list != nullptr) {
-        findKingsWithNoRoyalHeir(child_list->king_node, first);
-        child_list = child_list->next;
-    }
-}
-
-// 6. ì§ê³„ í›„ì†(ìì‹)ì´ ê°€ì¥ ë§ì€ ì™•ì„ ì°¾ëŠ” í•¨ìˆ˜
-Node* findKingWithMostRoyalHeirs(Node* root) {
-    if (root == nullptr) return nullptr;
-
-    Node* maxKing = root;
-    Node* queue[100]; // ê°„ë‹¨í•œ í êµ¬í˜„
-    int front = 0, back = 0;
-    queue[back++] = root;
-
-    while (front < back) {
-        Node* current = queue[front++];
-        if (current->child_count > maxKing->child_count) {
-            maxKing = current;
+        // 8) ¡°XÀÇ Á÷°è ¼±Á¶¡±
+        else if (line.find("Á÷°è ¼±Á¶") != string::npos) {
+            size_t pos = line.find("ÀÇ Á÷°è ¼±Á¶");
+            size_t start = line.rfind(' ', pos) + 1;
+            string name = line.substr(start, pos - start);
+            Node* nd = findNode(name);
+            if (nd && nd->parent) {
+                printAncestors(nd);
+            }
+            else {
+                cout << "´äÀÌ ¾ø½À´Ï´Ù.";
+            }
+            answered = true;
         }
-        ChildNode* child_list = current->children;
-        while (child_list != nullptr) {
-            queue[back++] = child_list->king_node;
-            child_list = child_list->next;
+        // 9) ¡°Á÷°è ÈÄ¼ÕÀÌ N¸í ÀÌ»ó ¡¦ ¸î ¸íÀÎ°¡¡±
+        else if (line.find("Á÷°è ÈÄ¼ÕÀÌ") != string::npos && line.find("¸î") != string::npos) {
+            // ¼ıÀÚ ÃßÃâ
+            size_t p0 = line.find("Á÷°è ÈÄ¼ÕÀÌ") + string("Á÷°è ÈÄ¼ÕÀÌ").length();
+            while (p0 < line.size() && line[p0] == ' ') ++p0;
+            size_t p1 = p0;
+            while (p1 < line.size() && line[p1] >= '0' && line[p1] <= '9') ++p1;
+            int N = stoi(line.substr(p0, p1 - p0));
+            int cnt = 0;
+            for (int i = 0; i < nodeCount; ++i) {
+                if (countChildren(&nodes[i]) >= N) ++cnt;
+            }
+            cout << cnt;
+            answered = true;
         }
-    }
-    return maxKing;
-}
-
-// 7. íŠ¹ì • ì™•ì˜ í˜•ì œë¥¼ ì°¾ëŠ” í•¨ìˆ˜
-void findBrothers(Node* root, const string& kingName) {
-    Node* kingNode = findNode(root, kingName);
-    if (kingNode == nullptr || kingNode->parent == nullptr) {
-        cout << "í˜•ì œë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.";
-        return;
-    }
-
-    Node* parent = kingNode->parent;
-    ChildNode* child_list = parent->children;
-    bool first = true;
-    while (child_list != nullptr) {
-        if (child_list->king_node->name != kingName) {
-            if (!first) cout << ", ";
-            cout << child_list->king_node->name;
-            first = false;
+        // 10) ¡°AÀº BÀÇ ¸î ´ë ÈÄ¼ÕÀÎ°¡¡±
+        else if (line.find("¸î ´ë ÈÄ¼Õ") != string::npos) {
+            size_t p_eun = line.find("Àº");
+            string desc = line.substr(0, p_eun);
+            size_t p_ui = line.find("ÀÇ", p_eun + 1);
+            string anc = line.substr(p_eun + 2, p_ui - (p_eun + 2));
+            Node* ndDesc = findNode(desc);
+            Node* ndAnc = findNode(anc);
+            if (ndDesc && ndAnc) {
+                int d = generationDistance(ndDesc, ndAnc->name);
+                if (d >= 0) cout << d;
+                else        cout << "´äÀÌ ¾ø½À´Ï´Ù.";
+            }
+            else {
+                cout << "´äÀÌ ¾ø½À´Ï´Ù.";
+            }
+            answered = true;
         }
-        child_list = child_list->next;
-    }
-    if(first) cout << "ì—†ìŒ";
-}
 
-// 8. íŠ¹ì • ì™•ì˜ ëª¨ë“  ì§ê³„ ì„ ì¡°ë¥¼ ì¶œë ¥í•˜ëŠ” í•¨ìˆ˜
-void printAncestors(Node* root, const string& kingName) {
-    Node* kingNode = findNode(root, kingName);
-    if (kingNode == nullptr) {
-        cout << "ì™•ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.";
-        return;
-    }
-    Node* current = kingNode->parent;
-    bool first = true;
-    while (current != nullptr) {
-        if (!first) cout << ", ";
-        cout << current->name;
-        first = false;
-        current = current->parent;
-    }
-     if(first) cout << "ì—†ìŒ";
-}
-
-// 9. ì§ê³„ í›„ì†ì´ 2ëª… ì´ìƒì¸ ì™•ì˜ ìˆ˜ë¥¼ ì„¸ëŠ” í•¨ìˆ˜
-int countKingsWithMultipleHeirs(Node* root) {
-    if (root == nullptr) return 0;
-    
-    int count = 0;
-    Node* queue[100];
-    int front = 0, back = 0;
-    queue[back++] = root;
-
-    while(front < back) {
-        Node* current = queue[front++];
-        if (current->child_count >= 2) {
-            count++;
+        if (!answered) {
+            cout << "´äÀ» Ã³¸®ÇÒ ¼ö ¾ø½À´Ï´Ù.";
         }
-        ChildNode* child_list = current->children;
-        while (child_list != nullptr) {
-            queue[back++] = child_list->king_node;
-            child_list = child_list->next;
-        }
-    }
-    return count;
-}
-
-// 10. ë‘ ì™• ì‚¬ì´ì˜ ì„¸ëŒ€ ì°¨ì´ë¥¼ ê³„ì‚°í•˜ëŠ” í•¨ìˆ˜
-int findGenerationGap(Node* root, const string& ancestorName, const string& descendantName) {
-    Node* ancestorNode = findNode(root, ancestorName);
-    Node* descendantNode = findNode(root, descendantName);
-
-    if (ancestorNode == nullptr || descendantNode == nullptr) {
-        return -1;
+        cout << "\n";
     }
 
-    int gap = 0;
-    Node* current = descendantNode;
-    while (current != nullptr && current != ancestorNode) {
-        current = current->parent;
-        gap++;
-    }
-
-    return (current == ancestorNode) ? gap : -1;
+    return 0;
 }

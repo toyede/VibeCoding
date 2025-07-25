@@ -10,7 +10,7 @@
 
 using namespace std;
 
-// 집합을 문자열로 변환하여 출력하는 함수
+// ?????? ??????? ?????? ?????? ???
 void print_set(const set<int>& s) {
     if (s.empty()) {
         cout << endl;
@@ -26,7 +26,7 @@ void print_set(const set<int>& s) {
     cout << endl;
 }
 
-// 쉼표로 구분된 문자열을 정수 집합으로 파싱하는 함수
+// ????? ???е? ??????? ???? ???????? ?????? ???
 set<int> parse_set(const string& line) {
     set<int> s;
     stringstream ss(line);
@@ -35,7 +35,7 @@ set<int> parse_set(const string& line) {
         try {
             s.insert(stoi(item));
         } catch (const invalid_argument& e) {
-            // stoi 변환 실패는 무시
+            // stoi ??? ???д? ????
         }
     }
     return s;
@@ -75,12 +75,12 @@ int main() {
         set_difference(set1.begin(), set1.end(), set2.begin(), set2.end(),
                        inserter(difference_set, difference_set.begin()));
 
-        cout << "== " << i + 1 << " 번째 쌍의 결과 ==" << endl;
-        cout << "합집합: ";
+        cout << "== " << i + 1 << " ??° ???? ??? ==" << endl;
+        cout << "??????: ";
         print_set(union_set);
-        cout << "교집합: ";
+        cout << "??????: ";
         print_set(intersection_set);
-        cout << "차집합: ";
+        cout << "??????: ";
         print_set(difference_set);
         
         if (i < n - 1) {
