@@ -335,7 +335,19 @@ class MovieBaconGame:
         if new_rows:
             new_df = pd.DataFrame(new_rows)
             self.actors_data = pd.concat([self.actors_data, new_df], ignore_index=True)
+            
+            # 새로 추가된 배우들을 actors_list에 추가
+            for new_actor in new_actors:
+                if new_actor not in self.actors_list:
+                    self.actors_list.append(new_actor)
+            
             print(f"추가된 배우: {len(new_actors)}명, 추가된 관계: {len(new_rows)}개")
+            
+            # 새로 추가된 배우들 출력
+            if new_actors:
+                print("새로 추가된 배우들:")
+                for i, actor in enumerate(sorted(new_actors), 1):
+                    print(f"  {len(self.actors_list) - len(new_actors) + i}. {actor}")
         
         return len(new_actors) > 0
     
